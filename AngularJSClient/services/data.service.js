@@ -5,9 +5,9 @@
     angular.module('movieApp')
         .factory('moviebus', moviebus)
 
-    moviebus.$inject = ['$http'];
+    moviebus.$inject = ['$http', '$q'];
 
-    function moviebus($http) {
+    function moviebus($http, $q) {
 
         var apiEndpoint = "http://localhost:1479/"; // TODO: Update to use the root location of your Web API
 
