@@ -1,28 +1,16 @@
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using System.IO;
+using MovieWebApi; // Assuming Startup is in this namespace or ensure using directive is present for Startup
+using Microsoft.AspNetCore.Builder; // Required for WebApplication
+using Microsoft.AspNetCore.Hosting; // Required for UseStartup
 
-namespace MovieWebApi
-{
-    public class Program
-    {
-        public static void Main(string[] args)
-        {
-            var config = new ConfigurationBuilder()
-                .AddCommandLine(args)
-                .AddEnvironmentVariables(prefix: "ASPNETCORE_")
-                .Build();
+var builder = WebApplication.CreateBuilder(args);
 
-            var host = new WebHostBuilder()
-                .UseConfiguration(config)
-                .UseKestrel()
-                .UseContentRoot(Directory.GetCurrentDirectory())
-                .UseIISIntegration()
-                .UseStartup<Startup>()
-                .Build();
+// Configure Kestrel and IIS integration (though defaults are often sufficient with WebApplication.CreateBuilder)
+// builder.WebHost.UseKestrel(); // Already configured by default
+// builder.WebHost.UseIISIntegration(); // Already configured by default, but can be explicit
 
-            host.Run();
-        }
-    }
-}
+// Use Startup.cs for service configuration and request pipeline
+builder.WebHost.UseStartup<Startup>();
+
+var app = builder.Build();
+
+app.Run();
