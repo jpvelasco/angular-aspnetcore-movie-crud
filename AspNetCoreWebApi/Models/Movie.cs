@@ -1,11 +1,10 @@
-﻿namespace MovieWebApi.Models
+namespace MovieWebApi.Models;
+
+public class Movie
 {
-    public class Movie
-    {
-        public int Id { get; set; }
-        public string Title { get; set; }
-        public string ReleaseYear { get; set; }
-        public string Director { get; set; }
-        public string Genre { get; set; }
-    }
+    public required int Id { get; set; }
+    public required string Title { get; set; }
+    public required string ReleaseYear { get; set; }
+    public required string Director { get; set; }
+    public required string Genre { get; set; }
 }

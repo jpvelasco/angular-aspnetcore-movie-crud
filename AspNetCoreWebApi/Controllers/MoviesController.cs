@@ -1,87 +1,90 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using MovieWebApi.Models;
-using System.Collections.Generic;
-using System.Linq;
 
-namespace MovieWebApi.Controllers
+namespace MovieWebApi.Controllers;
+
+[ApiController]
+[Route("api/[controller]")]
+public class MoviesController(MovieContext context) : Controller
 {
-    [Route("api/[controller]")]
-    public class MoviesController : Controller
+    // GET api/movies
+    [HttpGet]
+    public IEnumerable<Movie> Get()
     {
-        private readonly MovieContext _db;
+        return context.Movies
+                .OrderBy(b => b.Title)
+                .ToList();
+    }
 
-        public MoviesController(MovieContext context)
+    // GET api/movies/5
+    [HttpGet("{id}")]
+    public ActionResult<Movie> Get(int id)
+    {
+        var movie = context.Movies.FirstOrDefault(a => a.Id == id);
+
+        if (movie == null)
         {
-            _db = context;
+            return NotFound();
         }
 
-        // GET api/movies
-        [HttpGet]
-        public IList<Movie> Get()
+        return movie;
+    }
+
+    // POST api/movies
+    [HttpPost]
+    public IActionResult Post([FromBody] Movie value)
+    {
+        var movie = new Movie
         {
-            IList<Movie> movies;
+            Id = value.Id,
+            Title = value.Title,
+            ReleaseYear = value.ReleaseYear,
+            Director = value.Director,
+            Genre = value.Genre
+        };
 
-            movies = _db.Movies
-                    .OrderBy(b => b.Title)
-                    .ToList();
+        context.Movies.Add(movie);
+        context.SaveChanges();
+        return CreatedAtAction(nameof(Get), new { id = movie.Id }, movie);
+    }
 
-            return movies;
+    // PUT api/movies/5
+    [HttpPut("{id}")]
+    public IActionResult Put(int id, [FromBody] Movie value)
+    {
+        if (id != value.Id)
+        {
+            return BadRequest();
         }
 
-        // GET api/movies/5
-        [HttpGet("{id}")]
-        public Movie Get(int id)
+        var movie = context.Movies.FirstOrDefault(m => m.Id == id);
+        if (movie == null)
         {
-            Movie movie;
-            movie = _db.Movies.FirstOrDefault(a => a.Id == id);
-
-            return movie;
+            return NotFound();
         }
 
-        // POST api/movies
-        [HttpPost]
-        public void Post([FromBody]Movie value)
-        {
-            var movie = new Movie
-            {
-                Id = value.Id,
-                Title = value.Title,
-                ReleaseYear = value.ReleaseYear,
-                Director = value.Director,
-                Genre = value.Genre
-            };
+        movie.Title = value.Title;
+        movie.ReleaseYear = value.ReleaseYear;
+        movie.Director = value.Director;
+        movie.Genre = value.Genre;
 
-            _db.Movies.Add(movie);
-            _db.SaveChanges();
+        context.SaveChanges();
+        return NoContent();
+    }
+
+    // DELETE api/movies/5
+    [HttpDelete("{id}")]
+    public IActionResult Delete(int id)
+    {
+        var movie = context.Movies.FirstOrDefault(a => a.Id == id);
+
+        if (movie == null)
+        {
+            return NotFound();
         }
 
-        // PUT api/movies/5
-        [HttpPut]
-        public void Put([FromBody]Movie value)
-        {
-            Movie movie = _db.Movies.FirstOrDefault(m => m.Id == value.Id);
-            if (movie != null)
-            {
-                movie.Title = value.Title;
-                movie.ReleaseYear = value.ReleaseYear;
-                movie.Director = value.Director;
-                movie.Genre = value.Genre;
-
-                _db.SaveChanges();
-            }
-        }
-
-        // DELETE api/movies/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
-            Movie movie = _db.Movies.FirstOrDefault(a => a.Id == id);
-
-            if (movie != null)
-            {
-                _db.Movies.Remove(movie);
-                _db.SaveChanges();
-            }
-        }
+        context.Movies.Remove(movie);
+        context.SaveChanges();
+        return NoContent();
     }
 }

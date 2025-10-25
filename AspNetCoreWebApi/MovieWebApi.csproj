@@ -30,8 +30,6 @@
   <ItemGroup>
     <Content Include="wwwroot\**" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="Views\**" CopyToOutputDirectory="PreserveNewest" />
-    <Content Include="appsettings.json" CopyToOutputDirectory="PreserveNewest" />
-    <Content Include="web.config" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>
