@@ -1,16 +1,28 @@
-using MovieWebApi; // Assuming Startup is in this namespace or ensure using directive is present for Startup
-using Microsoft.AspNetCore.Builder; // Required for WebApplication
-using Microsoft.AspNetCore.Hosting; // Required for UseStartup
+using Microsoft.EntityFrameworkCore;
+using MovieWebApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Configure Kestrel and IIS integration (though defaults are often sufficient with WebApplication.CreateBuilder)
-// builder.WebHost.UseKestrel(); // Already configured by default
-// builder.WebHost.UseIISIntegration(); // Already configured by default, but can be explicit
-
-// Use Startup.cs for service configuration and request pipeline
-builder.WebHost.UseStartup<Startup>();
+// Add services to the container.
+builder.Services.AddCors();
+builder.Services.AddControllers();
+builder.Services.AddDbContext<MovieContext>(options =>
+    options.UseInMemoryDatabase("MyData"));
 
 var app = builder.Build();
+
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage();
+}
+
+app.UseCors(builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+
+app.UseRouting();
+
+app.UseAuthorization();
+
+app.MapControllers();
 
 app.Run();
